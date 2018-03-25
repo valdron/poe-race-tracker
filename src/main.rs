@@ -45,14 +45,9 @@ fn run() -> ClientResult<()> {
 
     let event_iter = get_race_iter(log_line_generator);
 
-    for event_result in event_iter {
-        let (time, event) = event_result?;
+    let v: Vec<_> = event_iter.inspect(|e| debug!("{:?}", e)).collect::<ClientResult<Vec<_>>>()?;
 
-        println!("{:?}: {:?}", time, event);
-
-    } 
-
-
+    println!("{:#?}", v);
     Ok(())
 }
 
