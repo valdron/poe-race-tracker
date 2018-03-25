@@ -27,14 +27,14 @@ impl<R: Read> Iterator for DefaultLogLineGenerator<R> {
         loop {
             match self.try_get_line() {
                 Ok(ref s) if s.len() == 0 => {
-                        trace!("Sleeping!");
-                        sleep(Duration::from_millis(500));
-                        continue;
-                    },
+                    trace!("Sleeping!");
+                    sleep(Duration::from_millis(500));
+                    continue;
+                }
                 item @ _ => {
                     trace!("Returning item: {:?}", item);
                     return Some(item);
-                },
+                }
             }
         }
     }

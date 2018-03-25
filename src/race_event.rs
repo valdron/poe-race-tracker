@@ -1,94 +1,76 @@
-use clientlog::ClientLogLine;
+use client_error::ClientError;
+use std::str::FromStr;
 use regex::Regex;
-use chrono::Local;
-use chrono::DateTime;
 
-const AREA_ENTERED_REGEX_STRING: &str = r"You have entered (?P<zone>.+).";
+const AREA_ENTERED_REGEX_STRING: &str = r"You have entered (?P<zone>.+)\.";
 const LEVELED_UP_REGEX_STRING: &str =
     r"(?P<name>[^(]+) \((?P<class>\w+)\) is now level (?P<level>\d{1,2})";
+
+const START_RUN_COMMAND: &str = "RT__start__";
+const END_RUN_COMMAND: &str = "RT__end__";
 
 lazy_static!{
 static ref AREA_ENTERED_REGEX: Regex = Regex::new(AREA_ENTERED_REGEX_STRING).unwrap();
 static ref LEVELED_UP_REGEX: Regex = Regex::new(LEVELED_UP_REGEX_STRING).unwrap();
 }
-
-#[derive(Debug)]
-pub struct Event {
-    pub timestamp: DateTime<Local>,
-    pub event_type: EventType,
-}
-
 #[derive(Debug, PartialEq)]
-pub enum EventType {
-    EnteredArea(String),
-    LoggedIn,
-    LeveledUp {
-        level: u8,
-        name: String,
-        class: String,
-    },
-    Other(String),
+pub enum SimpleEvent {
+    StartRun,
+    EndRun,
+    LevelUp(u8),
+    EnterZone(String),
+    LogIn,
 }
 
-impl From<ClientLogLine> for Event {
- fn from(other: ClientLogLine) -> Event {
-     Self {
-         timestamp: other.date,
-         event_type: other.message.into()
-     }
- }
-} 
-impl From<String> for EventType {
-    fn from(s: String) -> Self {
-        use self::EventType::*;
+pub struct EventParseError;
+
+impl FromStr for SimpleEvent {
+    type Err = ClientError;
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        use self::SimpleEvent::*;
         match s {
             ref s if AREA_ENTERED_REGEX.is_match(s) => {
                 let captures = AREA_ENTERED_REGEX.captures(s).unwrap();
-                EnteredArea(captures.name("zone").unwrap().as_str().into())
+                Ok(EnterZone(captures.name("zone").unwrap().as_str().into()))
             }
             ref s if LEVELED_UP_REGEX.is_match(s) => {
                 let captures = LEVELED_UP_REGEX.captures(s).unwrap();
-                LeveledUp {
-                    level: captures.name("level").unwrap().as_str().parse().unwrap(),
-                    class: captures.name("class").unwrap().as_str().into(),
-                    name: captures.name("name").unwrap().as_str().into(),
-                }
+                let level = captures.name("level").unwrap().as_str().parse()?;
+                Ok(LevelUp(level))
             }
-            ref s if s.starts_with("Connected to ") => LoggedIn,
-            _ => Other(s),
+            ref s if s.starts_with("Connected to ") => Ok(LogIn),
+            ref s if s.contains(START_RUN_COMMAND) => Ok(StartRun),
+            ref s if s.contains(END_RUN_COMMAND) => Ok(EndRun),
+            _ => Err(EventParseError.into())
         }
     }
 }
 
 #[test]
-fn test_from_string_event_type() {
-    const OTHER1: &str = "Building Uncached Shader 8afbe50306fc06f32c35d5f58917e566bd85466d048efdc037ea55e6b8f94c67 Resampler_OutColor_Copy_Nearest_Ms_16x. Profile ps_4_0 and entrypoint Resample with macros:  OUT_COLOR=1 COPY=1 NEAREST_FILTER=1 MULTISAMPLING=1 SAMPLE_COUNT=16";
-    const LOGIN: &str = "Connected to mil.login.pathofexile.com in 47ms.";
-    const OTHER2: &str = "Got Instance Details from login server";
-    const OTHER3: &str = "Just before calling client instance session";
-    const AREA: &str = "You have entered The Twilight Strand.";
+fn test_parse() {
+    const START: &str = "<KIWIZ> askdjgfhaksjndf: RT__start__";
+    const END: &str = "<KIWIZ> askdjgfhaksjndf: RT__end__";
+    const ZONE: &str = "You have entered The Coast.";
+    const LOGIN: &str = "Connected to mil2.login.pathofexile.com in 47ms.";
     const LEVELUP: &str = "yolsduhfasljdfasdf (Shadow) is now level 2";
+    const ERROR: &str = "Connecting to instance server at 159.122.142.233:6112";
 
-    let other: EventType = OTHER1.to_owned().into();
-    assert_eq!(other, EventType::Other(OTHER1.to_owned()));
-    let other: EventType = OTHER2.to_owned().into();
-    assert_eq!(other, EventType::Other(OTHER2.to_owned()));
-    let other: EventType = OTHER3.to_owned().into();
-    assert_eq!(other, EventType::Other(OTHER3.to_owned()));
+    let mut event: SimpleEvent;
 
-    let area: EventType = AREA.to_owned().into();
-    assert_eq!(area, EventType::EnteredArea("The Twilight Strand".into()));
+    event = START.parse().unwrap();
+    assert_eq!(event, SimpleEvent::StartRun);
 
-    let login: EventType = LOGIN.to_owned().into();
-    assert_eq!(login, EventType::LoggedIn);
+    event = END.parse().unwrap();
+    assert_eq!(event, SimpleEvent::EndRun);
 
-    let level: EventType = LEVELUP.to_owned().into();
-    assert_eq!(
-        level,
-        EventType::LeveledUp {
-            name: "yolsduhfasljdfasdf".into(),
-            class: "Shadow".into(),
-            level: 2,
-        }
-    );
+    event = ZONE.parse().unwrap();
+    assert_eq!(event, SimpleEvent::EnterZone("The Coast".into()));
+
+    event = LOGIN.parse().unwrap();
+    assert_eq!(event, SimpleEvent::LogIn);
+
+    event = LEVELUP.parse().unwrap();
+    assert_eq!(event, SimpleEvent::LevelUp(2));
+
+    assert!(ERROR.parse::<SimpleEvent>().is_err());
 }

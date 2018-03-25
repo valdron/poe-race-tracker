@@ -1,51 +1,36 @@
+#![feature(conservative_impl_trait)]
+
 extern crate chrono;
-#[macro_use]
-extern crate lazy_static;
-extern crate regex;
 extern crate env_logger;
 #[macro_use]
-extern crate log;
-#[macro_use]
 extern crate failure;
+#[macro_use]
+extern crate lazy_static;
+#[macro_use]
+extern crate log;
+extern crate regex;
 
 mod clientlog;
 mod logline_generator;
 mod race_event;
+mod client_error;
+//mod race_run;
 
-use std::path::PathBuf;
+use chrono::Local;
+use chrono::DateTime;
+use race_event::SimpleEvent;
+use client_error::ClientResult;
+use std::path::Path;
 use log::LevelFilter;
-use race_event::Event;
-use race_event::EventType;
 use std::fs::File;
 use std::io::{Seek, SeekFrom};
 
 use clientlog::ClientLogLine;
+use client_error::ClientError;
 use logline_generator::{DefaultLogLineGenerator, LogLineGenerator};
 
 const CLIENT_TXT: &str =
     "C:\\Program Files (x86)\\Grinding Gear Games\\Path of Exile\\logs\\Client.txt";
-
-type ClientResult<T> = Result<T, ClientError>;
-
-#[derive(Debug, Fail)]
-enum ClientError {
-    #[fail(display = "IoError: {}", err)]
-    IoError{err: std::io::Error},
-    #[fail(display = "StringError: {}", message)]
-    StringError{message: String}
-}
-
-impl From<String> for ClientError{
-    fn from(message: String) -> Self {
-        ClientError::StringError{message}
-    }
-}
-
-impl From<std::io::Error> for ClientError{
-    fn from(err: std::io::Error) -> Self {
-        ClientError::IoError{err}
-    }
-}
 
 fn main() {
     let mut builder = env_logger::Builder::from_default_env();
@@ -55,48 +40,49 @@ fn main() {
 }
 
 fn run() -> ClientResult<()> {
-    let file = get_file_seeked_to_end(CLIENT_TXT.into()).map_err(|e| format!("{:?}", e))?;
+    let file = get_file_seeked_to_end(CLIENT_TXT)?;
     let log_line_generator = DefaultLogLineGenerator::from_reader(file);
 
-    let mut events = log_line_generator.filter_map(|line_result| {
-        if let Ok(line) = line_result {
-            if let Ok(cll) = line.parse::<ClientLogLine>() {
-                Some(Event::from(cll))
-            } else { None }
-        } else { None }
-    }).filter(|event| match event {
-            &Event{event_type: EventType::Other(_), ..} => false,
-            _ => true
-    });
+    let event_iter = get_race_iter(log_line_generator);
 
+    for event_result in event_iter {
+        let (time, event) = event_result?;
 
+        println!("{:?}: {:?}", time, event);
 
-    while let Some(cll) = events.next() {
-        let race_event: Event = cll.into();
-        println!("{:#?}", race_event);
-    }
+    } 
+
 
     Ok(())
 }
 
-fn get_file_seeked_to_end(s: PathBuf) -> ClientResult<File> {
-    debug!("Opening File: {:?}", s);
+fn get_race_iter<I: Iterator<Item=std::io::Result<String>>>(i: I) -> impl Iterator<Item=ClientResult<(DateTime<Local>, SimpleEvent)>> {
+    i.map(|line_result| -> ClientResult<(DateTime<Local>,SimpleEvent)> {
+            let line = line_result?;
+            let cll: ClientLogLine = line.parse()?;
+            let event: SimpleEvent = cll.message.parse()?;
+            Ok((cll.date, event))
+        }).filter_map(|event_result| {
+            match event_result {
+                Err(ClientError::EventParseError) => None,
+                item @ _ => Some(item)
+            }
+        }).skip_while(|event_result| {
+            match event_result {
+                &Ok((_, SimpleEvent::StartRun)) => false,
+                _ => true
+            }
+        }).take_while(|event_result| {
+            match event_result {
+                &Ok((_, SimpleEvent::EndRun)) => false,
+                _ => true
+            }
+        })
+}
+
+fn get_file_seeked_to_end<T: AsRef<Path>>(s: T) -> ClientResult<File> {
+    debug!("Opening File: {:?}", s.as_ref());
     let mut f = File::open(s)?;
     f.seek(SeekFrom::End(0))?;
     Ok(f)
 }
-
-
-// #[test]
-// fn test_work_file() {
-//     const LINES: &str = r#"2018/03/22 22:44:20 536347953 b7d [DEBUG Client 8672] Got Instance Details from login server
-//                            2018/03/22 22:44:20 536347968 b9a [INFO Client 8672] Just before calling client instance session
-//                            2018/03/22 22:44:20 536347968 d9 [INFO Client 8672] Connecting to instance server at 159.122.142.230:6112
-//                            2018/03/22 22:44:20 536348031 161 [DEBUG Client 8672] Connect time to instance server was 47ms
-//                            2018/03/22 22:44:21 536348765 80f [DEBUG Client 8672] Joined guild named Kiwi! with 41 members
-//                            2018/03/22 22:44:21 536348921 9b2 [INFO Client 8672] : You have entered Lioneye's Watch.
-//                            2018/03/22 22:44:21 536348937 d8b [DEBUG Client 8672] Entering area 1_1_town"#;
-//     let res = work_file(LINES.as_bytes(), Local.datetime_from_str("2018/03/22 22:44:19", "%Y/%m/%d %H:%M:%S").unwrap());
-//     assert!(res.is_ok());
-//     assert_eq!(res.unwrap().len(), 7);
-// }
