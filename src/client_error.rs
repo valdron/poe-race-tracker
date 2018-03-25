@@ -1,6 +1,7 @@
 use race_event::EventParseError;
 use std::num::ParseIntError;
 use std::io;
+use serde_json;
 
 pub type ClientResult<T> = Result<T, ClientError>;
 
@@ -39,3 +40,9 @@ impl From<EventParseError> for ClientError {
         ClientError::EventParseError
     }
 }
+
+ impl From<serde_json::Error> for ClientError {
+     fn from(err: serde_json::Error) -> Self {
+         ClientError::StringError{message: format!("{:?}", err)}
+     }
+ }

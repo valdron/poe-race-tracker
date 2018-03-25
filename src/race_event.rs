@@ -13,7 +13,7 @@ lazy_static!{
 static ref AREA_ENTERED_REGEX: Regex = Regex::new(AREA_ENTERED_REGEX_STRING).unwrap();
 static ref LEVELED_UP_REGEX: Regex = Regex::new(LEVELED_UP_REGEX_STRING).unwrap();
 }
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
 pub enum SimpleEvent {
     StartRun,
     EndRun,

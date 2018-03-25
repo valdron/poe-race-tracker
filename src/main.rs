@@ -9,12 +9,16 @@ extern crate lazy_static;
 #[macro_use]
 extern crate log;
 extern crate regex;
+extern crate serde;
+#[macro_use]
+extern crate serde_derive;
+extern crate serde_json;
 
 mod clientlog;
 mod logline_generator;
 mod race_event;
 mod client_error;
-//mod race_run;
+mod race_run;
 
 use chrono::Local;
 use chrono::DateTime;
@@ -22,12 +26,13 @@ use race_event::SimpleEvent;
 use client_error::ClientResult;
 use std::path::Path;
 use log::LevelFilter;
-use std::fs::File;
+use std::fs::{File, OpenOptions};
 use std::io::{Seek, SeekFrom};
 
 use clientlog::ClientLogLine;
 use client_error::ClientError;
 use logline_generator::{DefaultLogLineGenerator, LogLineGenerator};
+use race_run::RaceRun;
 
 const CLIENT_TXT: &str =
     "C:\\Program Files (x86)\\Grinding Gear Games\\Path of Exile\\logs\\Client.txt";
@@ -43,11 +48,26 @@ fn run() -> ClientResult<()> {
     let file = get_file_seeked_to_end(CLIENT_TXT)?;
     let log_line_generator = DefaultLogLineGenerator::from_reader(file);
 
-    let event_iter = get_race_iter(log_line_generator);
+    let mut event_iter = get_race_iter(log_line_generator).inspect(|e| debug!("{:?}", e));
 
-    let v: Vec<_> = event_iter.inspect(|e| debug!("{:?}", e)).collect::<ClientResult<Vec<_>>>()?;
 
-    println!("{:#?}", v);
+    let mut v = Vec::new();
+
+    while let Some(item) = event_iter.next() {
+        let item = item?;
+        if let (_, SimpleEvent::EndRun) = item {
+            v.push(item);
+            break;
+        } else {
+            v.push(item);
+        }
+    }
+
+    let run = RaceRun::from_iter(v.into_iter())?;
+
+    println!("{:#?}", run);
+    let mut save_file = OpenOptions::new().write(true).create(true).append(true).open("./save")?;
+    serde_json::to_writer_pretty(&mut save_file, &run)?;
     Ok(())
 }
 
@@ -65,11 +85,6 @@ fn get_race_iter<I: Iterator<Item=std::io::Result<String>>>(i: I) -> impl Iterat
         }).skip_while(|event_result| {
             match event_result {
                 &Ok((_, SimpleEvent::StartRun)) => false,
-                _ => true
-            }
-        }).take_while(|event_result| {
-            match event_result {
-                &Ok((_, SimpleEvent::EndRun)) => false,
                 _ => true
             }
         })
