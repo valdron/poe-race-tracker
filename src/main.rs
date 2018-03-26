@@ -56,7 +56,9 @@ fn run() -> ClientResult<()> {
 
     let mut v = Vec::new();
 
+    info!("starting to process events!");
     let end = fill_vec_and_return_end_time(&mut event_iter, &mut v)?;
+    info!("run finished compiling info and sending");
 
     let run = RaceRun::new(start, end, v);
 
@@ -87,6 +89,7 @@ fn get_race_iter<I: Iterator<Item = std::io::Result<String>>>(
 fn wait_for_start_of_run<T: Iterator<Item = ClientResult<EventTime>>>(
     i: &mut T,
 ) -> ClientResult<DateTime<Local>> {
+    info!("waiting for start command!");
     while let Some(item) = i.next() {
         match item? {
             (start, SimpleEvent::StartRun) => return Ok(start),
