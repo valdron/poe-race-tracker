@@ -1,0 +1,51 @@
+2018/03/25 15:57:02 767505234 9b2 [INFO Client 8872] <KIWIZ> asldjhfalsjncvdhfdolsaj: RT__start__
+2018/03/25 15:58:05 767568296 9b2 [INFO Client 8872] : asldjhfalsjncvdhfdolsaj (Templar) is now level 2
+2018/03/25 15:58:12 767575734 b79 [DEBUG Client 8872] Got Instance Details from login server
+2018/03/25 15:58:12 767575734 b96 [INFO Client 8872] Just before calling client instance session
+2018/03/25 15:58:12 767575734 d9 [INFO Client 8872] Connecting to instance server at 159.122.142.245:6112
+2018/03/25 15:58:12 767575781 161 [DEBUG Client 8872] Connect time to instance server was 47ms
+2018/03/25 15:58:13 767576578 80f [DEBUG Client 8872] Joined guild named Kiwi! with 42 members 
+2018/03/25 15:58:13 767576796 9b2 [INFO Client 8872] : You have entered Lioneye's Watch.
+2018/03/25 15:58:13 767576812 d87 [DEBUG Client 8872] Entering area 1_1_town
+2018/03/25 15:58:35 767598125 9b2 [INFO Client 8872] : Trade accepted.
+2018/03/25 15:58:40 767603250 b79 [DEBUG Client 8872] Got Instance Details from login server
+2018/03/25 15:58:40 767603250 b96 [INFO Client 8872] Just before calling client instance session
+2018/03/25 15:58:40 767603250 d9 [INFO Client 8872] Connecting to instance server at 159.122.142.237:6112
+2018/03/25 15:58:40 767603296 161 [DEBUG Client 8872] Connect time to instance server was 46ms
+2018/03/25 15:58:41 767604406 80f [DEBUG Client 8872] Joined guild named Kiwi! with 42 members 
+2018/03/25 15:58:41 767604546 9b2 [INFO Client 8872] : You have entered The Coast.
+2018/03/25 15:58:41 767604578 d87 [DEBUG Client 8872] Entering area 1_1_2
+2018/03/25 16:00:13 767696687 b79 [DEBUG Client 8872] Got Instance Details from login server
+2018/03/25 16:00:13 767696687 b96 [INFO Client 8872] Just before calling client instance session
+2018/03/25 16:00:13 767696687 d9 [INFO Client 8872] Connecting to instance server at 159.122.142.244:6112
+2018/03/25 16:00:13 767696750 161 [DEBUG Client 8872] Connect time to instance server was 31ms
+2018/03/25 16:00:14 767697718 80f [DEBUG Client 8872] Joined guild named Kiwi! with 42 members 
+2018/03/25 16:00:14 767697875 9b2 [INFO Client 8872] : You have entered The Tidal Island.
+2018/03/25 16:00:14 767697890 d87 [DEBUG Client 8872] Entering area 1_1_2a
+2018/03/25 16:00:18 767700968 7d [INFO Client 8872] Successfully allocated passive skill id: elemental_damage_mana_regen1893, name: Elemental Damage
+2018/03/25 16:00:36 767719046 9b2 [INFO Client 8872] : asldjhfalsjncvdhfdolsaj has been slain.
+2018/03/25 16:00:38 767721843 b79 [DEBUG Client 8872] Got Instance Details from login server
+2018/03/25 16:00:38 767721843 b96 [INFO Client 8872] Just before calling client instance session
+2018/03/25 16:00:38 767721843 d9 [INFO Client 8872] Connecting to instance server at 159.122.142.237:6112
+2018/03/25 16:00:38 767721921 161 [DEBUG Client 8872] Connect time to instance server was 47ms
+2018/03/25 16:00:39 767722828 80f [DEBUG Client 8872] Joined guild named Kiwi! with 42 members 
+2018/03/25 16:00:40 767723062 9b2 [INFO Client 8872] : You have entered Lioneye's Watch.
+2018/03/25 16:00:40 767723062 d87 [DEBUG Client 8872] Entering area 1_1_town
+2018/03/25 16:00:52 767735156 a5 [INFO Client 8872] Async connecting to 159.122.142.242:20481
+2018/03/25 16:00:52 767735218 cc [INFO Client 8872] Connected to 159.122.142.242 in 47ms.
+2018/03/25 16:01:38 767781406 b79 [DEBUG Client 8872] Got Instance Details from login server
+2018/03/25 16:01:38 767781406 b96 [INFO Client 8872] Just before calling client instance session
+2018/03/25 16:01:38 767781406 d9 [INFO Client 8872] Connecting to instance server at 159.122.142.237:6112
+2018/03/25 16:01:38 767781468 161 [DEBUG Client 8872] Connect time to instance server was 47ms
+2018/03/25 16:01:39 767782203 80f [DEBUG Client 8872] Joined guild named Kiwi! with 42 members 
+2018/03/25 16:01:39 767782421 9b2 [INFO Client 8872] : You have entered Lioneye's Watch.
+2018/03/25 16:01:39 767782437 d87 [DEBUG Client 8872] Entering area 1_1_town
+2018/03/25 16:01:39 767782781 9b2 [INFO Client 8872] : You have joined global chat channel 714 English.
+2018/03/25 16:01:47 767790781 b79 [DEBUG Client 8872] Got Instance Details from login server
+2018/03/25 16:01:47 767790781 b96 [INFO Client 8872] Just before calling client instance session
+2018/03/25 16:01:47 767790781 d9 [INFO Client 8872] Connecting to instance server at 159.122.142.237:6112
+2018/03/25 16:01:47 767790843 161 [DEBUG Client 8872] Connect time to instance server was 62ms
+2018/03/25 16:01:48 767791734 80f [DEBUG Client 8872] Joined guild named Kiwi! with 42 members 
+2018/03/25 16:01:48 767791843 9b2 [INFO Client 8872] : You have entered The Coast.
+2018/03/25 16:01:48 767791859 d87 [DEBUG Client 8872] Entering area 1_1_2
+2018/03/25 16:02:00 767803531 9b2 [INFO Client 8872] <KIWIZ> asldjhfalsjncvdhfdolsaj: RT__end__

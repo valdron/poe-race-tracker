@@ -41,7 +41,7 @@ impl FromStr for SimpleEvent {
             ref s if s.starts_with("Connected to ") => Ok(LogIn),
             ref s if s.contains(START_RUN_COMMAND) => Ok(StartRun),
             ref s if s.contains(END_RUN_COMMAND) => Ok(EndRun),
-            _ => Err(EventParseError.into())
+            _ => Err(EventParseError.into()),
         }
     }
 }

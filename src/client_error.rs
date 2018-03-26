@@ -14,7 +14,7 @@ pub enum ClientError {
     #[fail(display = "ParseIntError: {:?}", err)]
     ParseError { err: ParseIntError },
     #[fail(display = "EventParseError")]
-    EventParseError
+    EventParseError,
 }
 
 impl From<String> for ClientError {
@@ -41,8 +41,10 @@ impl From<EventParseError> for ClientError {
     }
 }
 
- impl From<serde_json::Error> for ClientError {
-     fn from(err: serde_json::Error) -> Self {
-         ClientError::StringError{message: format!("{:?}", err)}
-     }
- }
+impl From<serde_json::Error> for ClientError {
+    fn from(err: serde_json::Error) -> Self {
+        ClientError::StringError {
+            message: format!("{:?}", err),
+        }
+    }
+}
