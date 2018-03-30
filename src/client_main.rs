@@ -17,6 +17,8 @@ extern crate serde_json;
 mod client;
 mod common;
 
+use common::race_run::ZoneEntry;
+use common::race_run::LevelUp;
 use chrono::Local;
 use chrono::DateTime;
 use client::race_event::SimpleEvent;
@@ -57,7 +59,12 @@ fn run() -> ClientResult<()> {
     let end = fill_vec_and_return_end_time(&mut event_iter, &mut v)?;
     info!("run finished compiling info and sending");
 
-    let run = RaceRun::new(start, end, v);
+    let duration = end.signed_duration_since(start).num_seconds() as u64;
+
+    let levels: Vec<LevelUp> = get_level_ups(start, &v);
+    let zones: Vec<ZoneEntry> = get_zone_entries(start, &v);
+
+    let run = RaceRun::new(duration, levels, zones);
 
     println!("{:#?}", run);
     let mut save_file = OpenOptions::new()
@@ -109,6 +116,28 @@ fn fill_vec_and_return_end_time<T: Iterator<Item = ClientResult<EventTime>>>(
         }
     }
     Err("Ended before race end!".to_owned().into())
+}
+
+fn get_level_ups(start: DateTime<Local>, v: &[EventTime]) -> Vec<LevelUp> {
+    v.iter().filter_map(|event| {
+        match event { 
+            &(time, SimpleEvent::LevelUp(level)) => {
+                Some(LevelUp::new(level, time.signed_duration_since(start).num_seconds() as u64))
+            }
+            _ => None
+            }
+    }).collect()
+}
+
+fn get_zone_entries(start: DateTime<Local>, v: &[EventTime]) -> Vec<ZoneEntry> {
+    v.iter().filter_map(|event| {
+        match event { 
+            &(time, SimpleEvent::EnterZone(ref name)) => {
+                Some(ZoneEntry::new(name.clone(), time.signed_duration_since(start).num_seconds() as u64))
+            }
+            _ => None
+            }
+    }).collect()
 }
 
 fn get_file_seeked_to_end<T: AsRef<Path>>(s: T) -> ClientResult<File> {
