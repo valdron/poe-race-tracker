@@ -22,13 +22,13 @@ impl LevelUp {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct RaceRun {
+pub struct NewRaceRun {
     duration_in_seconds: u64, 
     zones: Vec<ZoneEntry>,
     levels: Vec<LevelUp>,
 }
 
-impl RaceRun {
+impl NewRaceRun {
     pub fn new(
         duration_in_seconds: u64,
         levels: Vec<LevelUp>,
