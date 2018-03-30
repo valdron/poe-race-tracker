@@ -14,25 +14,22 @@ extern crate serde;
 extern crate serde_derive;
 extern crate serde_json;
 
-mod clientlog;
-mod logline_generator;
-mod race_event;
-mod client_error;
-mod race_run;
+mod client;
+mod common;
 
 use chrono::Local;
 use chrono::DateTime;
-use race_event::SimpleEvent;
-use client_error::ClientResult;
+use client::race_event::SimpleEvent;
+use client::client_error::ClientResult;
 use std::path::Path;
 use log::LevelFilter;
 use std::fs::{File, OpenOptions};
 use std::io::{Seek, SeekFrom};
 
-use clientlog::ClientLogLine;
-use client_error::ClientError;
-use logline_generator::{DefaultLogLineGenerator, LogLineGenerator};
-use race_run::RaceRun;
+use client::clientlog::ClientLogLine;
+use client::client_error::ClientError;
+use client::logline_generator::{DefaultLogLineGenerator, LogLineGenerator};
+use common::race_run::RaceRun;
 
 const CLIENT_TXT: &str =
     "C:\\Program Files (x86)\\Grinding Gear Games\\Path of Exile\\logs\\Client.txt";

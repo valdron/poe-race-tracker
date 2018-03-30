@@ -5,11 +5,11 @@ authors = ["Paul Seehofer <seehofer.paul@gmail.com>"]
 
 [[bin]]
 name = "client"
-path = "src/main.rs"
+path = "src/client_main.rs"
 
 [[bin]]
 name = "server"
-path = "src/server.rs"
+path = "src/server_main.rs"
 
 [dependencies]
 chrono = { version = "0.4", features = ["serde"] }

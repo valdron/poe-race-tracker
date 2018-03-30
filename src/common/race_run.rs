@@ -1,6 +1,6 @@
 use chrono::Local;
 use chrono::DateTime;
-use race_event::SimpleEvent;
+use client::race_event::SimpleEvent;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct RaceRun {

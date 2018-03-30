@@ -1,4 +1,4 @@
-use client_error::ClientError;
+use super::client_error::ClientError;
 use std::str::FromStr;
 use regex::Regex;
 

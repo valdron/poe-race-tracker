@@ -1,4 +1,4 @@
-use race_event::EventParseError;
+use super::race_event::EventParseError;
 use std::num::ParseIntError;
 use std::io;
 use serde_json;
