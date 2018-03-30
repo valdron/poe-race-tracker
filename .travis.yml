@@ -6,7 +6,7 @@ services:
 before_script:
   - psql -c 'create database build_db;' -U postgres
   - echo "DATABASE_URL=postgres://postgres@localhost/build_db" > .env
-  - if [ -e ~/.cargo/bin/diesel ]; then cargo install diesel_cli --no-default-features --features=postgres; fi
+  - if ! [ -e ~/.cargo/bin/diesel ]; then cargo install diesel_cli --no-default-features --features=postgres; fi
   - diesel migration run
 script:
   - cargo build --verbose --all
