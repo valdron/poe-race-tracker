@@ -83,6 +83,7 @@ pub fn get_zone_entries(start: DateTime<Local>, v: &[EventTime]) -> Vec<ZoneEntr
 mod tests {
     const RUN_LINES: &[u8] = include_bytes!("../../test_runs/ok_run.txt");
     use super::*;
+    use super::logline_generator::{DefaultLogLineGenerator, LogLineGenerator};
     #[test]
     fn test_wait_for_start_run() {
         let log_line_generator = DefaultLogLineGenerator::from_reader(RUN_LINES);
