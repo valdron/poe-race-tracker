@@ -2,9 +2,7 @@
 #![plugin(rocket_codegen)]
 #![feature(custom_attribute)]
 
-#[macro_use]
 extern crate rocket;
-#[macro_use]
 extern crate rocket_contrib;
 extern crate dotenv;
 #[macro_use]
@@ -23,6 +21,8 @@ mod server;
 pub mod schema;
 pub mod models;
 
+use diesel::QueryResult;
+use server::db_executer::create_racerun;
 use rocket_contrib::Json;
 use common::race_run::NewRaceRun;
 use server::db_conn::DbConn;
@@ -37,10 +37,10 @@ fn init_pool() -> Pool {
     r2d2::Pool::new(manager).expect("db pool")
 }
 
-#[post("/runs", format = "application/json", data = "<_run>")]
-fn create_run(_conn: DbConn, _run: Json<NewRaceRun>) -> Json<i32> {
+#[post("/runs", format = "application/json", data = "<run>")]
+fn create_run(conn: DbConn, run: Json<NewRaceRun>) -> QueryResult<Json<i32>> {
 
-    Json(0)
+    create_racerun(&conn, &run).map(|id| Json(id))
 }
 
 fn main() {

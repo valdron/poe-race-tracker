@@ -1,7 +1,7 @@
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ZoneEntry {
-    name: String,
-    seconds_after_start: u64,
+    pub name: String,
+    pub seconds_after_start: u64,
 }
 
 impl ZoneEntry {
@@ -15,8 +15,8 @@ impl ZoneEntry {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct LevelUp {
-    level: u8,
-    seconds_after_start: u64,
+    pub level: u8,
+    pub seconds_after_start: u64,
 }
 impl LevelUp {
     pub fn new(level: u8, seconds_after_start: u64) -> Self {
@@ -29,9 +29,9 @@ impl LevelUp {
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct NewRaceRun {
-    duration_in_seconds: u64,
-    zones: Vec<ZoneEntry>,
-    levels: Vec<LevelUp>,
+    pub duration_in_seconds: u64,
+    pub zones: Vec<ZoneEntry>,
+    pub levels: Vec<LevelUp>,
 }
 
 impl NewRaceRun {
