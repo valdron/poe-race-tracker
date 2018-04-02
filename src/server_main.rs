@@ -21,11 +21,11 @@ mod server;
 pub mod schema;
 pub mod models;
 
+use diesel::OptionalExtension;
 use diesel::QueryResult;
-use server::db_executer::create_racerun;
+use server::db_executer::DbExecuter;
 use rocket_contrib::Json;
 use common::race_run::NewRaceRun;
-use server::db_conn::DbConn;
 use server::db_conn::Pool;
 use diesel::pg::PgConnection;
 use r2d2_diesel::ConnectionManager;
@@ -38,14 +38,19 @@ fn init_pool() -> Pool {
 }
 
 #[post("/runs", format = "application/json", data = "<run>")]
-fn create_run(conn: DbConn, run: Json<NewRaceRun>) -> QueryResult<Json<i32>> {
+fn create_run(exec: DbExecuter, run: Json<NewRaceRun>) -> QueryResult<Json<i32>> {
 
-    create_racerun(&conn, &run).map(|id| Json(id))
+    exec.create_racerun(&run).map(|id| Json(id))
+}
+
+#[get("/run/<run_id>")]
+fn get_run(exec: DbExecuter, run_id: i32) -> QueryResult<Option<Json<NewRaceRun>>> {
+    exec.get_racerun(run_id).optional().map(|run_opt| run_opt.map(|run|Json(run)))
 }
 
 fn main() {
     rocket::ignite()
         .manage(init_pool())
-        .mount("/", routes![create_run])
+        .mount("/", routes![create_run, get_run])
         .launch();
 }

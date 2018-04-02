@@ -1,4 +1,3 @@
-#![feature(conservative_impl_trait)]
 
 extern crate chrono;
 extern crate env_logger;

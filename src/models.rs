@@ -66,25 +66,25 @@ pub fn create_zoneentry(
 #[derive(Identifiable, Queryable)]
 pub struct Run {
     pub id: i32,
-    duration_in_seconds: i32,
+    pub duration_in_seconds: i32,
 }
 
 #[derive(Identifiable, Queryable, Associations)]
 #[belongs_to(Run, foreign_key = "run_id")]
 #[table_name = "levels"]
 pub struct LevelUp {
-    id: i32,
-    run_id: i32,
-    level: i16,
-    duration_in_seconds: i32,
+    pub id: i32,
+    pub run_id: i32,
+    pub level: i16,
+    pub duration_in_seconds: i32,
 }
 
 #[derive(Identifiable, Queryable, Associations)]
 #[belongs_to(Run, foreign_key = "run_id")]
 #[table_name = "zones"]
 pub struct ZoneEntry {
-    id: i32,
-    run_id: i32,
-    name: String,
-    duration_in_seconds: i32,
+    pub id: i32,
+    pub run_id: i32,
+    pub name: String,
+    pub duration_in_seconds: i32,
 }
