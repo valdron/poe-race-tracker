@@ -2,16 +2,21 @@
 #![plugin(rocket_codegen)]
 #![feature(custom_attribute)]
 
-#[macro_use] extern crate rocket;
-#[macro_use] extern crate rocket_contrib;
+#[macro_use]
+extern crate rocket;
+#[macro_use]
+extern crate rocket_contrib;
 extern crate dotenv;
-#[macro_use] extern crate dotenv_codegen;
-#[macro_use] extern crate diesel;
+#[macro_use]
+extern crate dotenv_codegen;
+#[macro_use]
+extern crate diesel;
 extern crate r2d2_diesel;
 extern crate r2d2;
 extern crate serde;
 extern crate serde_json;
-#[macro_use] extern crate serde_derive;
+#[macro_use]
+extern crate serde_derive;
 
 mod common;
 mod server;
@@ -40,6 +45,7 @@ fn create_run(_conn: DbConn, _run: Json<NewRaceRun>) -> Json<i32> {
 
 fn main() {
     rocket::ignite()
-    .manage(init_pool())
-    .mount("/", routes![create_run]).launch();
+        .manage(init_pool())
+        .mount("/", routes![create_run])
+        .launch();
 }

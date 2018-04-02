@@ -32,8 +32,7 @@ use std::io::{Seek, SeekFrom};
 use client::logline_generator::{DefaultLogLineGenerator, LogLineGenerator};
 use common::race_run::NewRaceRun;
 
-const CLIENT_TXT: &str =
-    "C:\\Program Files (x86)\\Grinding Gear Games\\Path of Exile\\logs\\Client.txt";
+const CLIENT_TXT: &str = "C:\\Program Files (x86)\\Grinding Gear Games\\Path of Exile\\logs\\Client.txt";
 
 fn main() {
     let mut builder = env_logger::Builder::from_default_env();

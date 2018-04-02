@@ -15,9 +15,7 @@ pub struct DefaultLogLineGenerator<R: Read> {
 
 impl<R: Read> LogLineGenerator<R> for DefaultLogLineGenerator<R> {
     fn from_reader(r: R) -> Self {
-        Self {
-            reader: BufReader::new(r),
-        }
+        Self { reader: BufReader::new(r) }
     }
 }
 

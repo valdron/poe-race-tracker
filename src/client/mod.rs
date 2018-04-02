@@ -24,9 +24,9 @@ pub fn get_race_iter<I: Iterator<Item = io::Result<String>>>(
         let event: SimpleEvent = cll.message.parse()?;
         Ok((cll.date, event))
     }).filter_map(|event_result| match event_result {
-        Err(ClientError::EventParseError) => None,
-        item @ _ => Some(item),
-    })
+            Err(ClientError::EventParseError) => None,
+            item @ _ => Some(item),
+        })
 }
 
 pub fn wait_for_start_of_run<T: Iterator<Item = ClientResult<EventTime>>>(
@@ -58,25 +58,31 @@ pub fn fill_vec_and_return_end_time<T: Iterator<Item = ClientResult<EventTime>>>
 }
 
 pub fn get_level_ups(start: DateTime<Local>, v: &[EventTime]) -> Vec<LevelUp> {
-    v.iter().filter_map(|event| {
-        match event { 
+    v.iter()
+        .filter_map(|event| match event { 
             &(time, SimpleEvent::LevelUp(level)) => {
-                Some(LevelUp::new(level, time.signed_duration_since(start).num_seconds() as u64))
+                Some(LevelUp::new(
+                    level,
+                    time.signed_duration_since(start).num_seconds() as u64,
+                ))
             }
-            _ => None
-            }
-    }).collect()
+            _ => None,
+        })
+        .collect()
 }
 
 pub fn get_zone_entries(start: DateTime<Local>, v: &[EventTime]) -> Vec<ZoneEntry> {
-    v.iter().filter_map(|event| {
-        match event { 
+    v.iter()
+        .filter_map(|event| match event { 
             &(time, SimpleEvent::EnterZone(ref name)) => {
-                Some(ZoneEntry::new(name.clone(), time.signed_duration_since(start).num_seconds() as u64))
+                Some(ZoneEntry::new(
+                    name.clone(),
+                    time.signed_duration_since(start).num_seconds() as u64,
+                ))
             }
-            _ => None
-            }
-    }).collect()
+            _ => None,
+        })
+        .collect()
 }
 
 #[cfg(test)]

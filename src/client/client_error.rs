@@ -43,8 +43,6 @@ impl From<EventParseError> for ClientError {
 
 impl From<serde_json::Error> for ClientError {
     fn from(err: serde_json::Error) -> Self {
-        ClientError::StringError {
-            message: format!("{:?}", err),
-        }
+        ClientError::StringError { message: format!("{:?}", err) }
     }
 }
