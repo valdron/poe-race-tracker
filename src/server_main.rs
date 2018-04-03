@@ -2,33 +2,32 @@
 #![plugin(rocket_codegen)]
 #![feature(custom_attribute)]
 
+extern crate dotenv;
 extern crate rocket;
 extern crate rocket_contrib;
-extern crate dotenv;
 #[macro_use]
 extern crate dotenv_codegen;
 #[macro_use]
 extern crate diesel;
-extern crate r2d2_diesel;
 extern crate r2d2;
+extern crate r2d2_diesel;
 extern crate serde;
 extern crate serde_json;
 #[macro_use]
 extern crate serde_derive;
 
 mod common;
+mod db;
 mod server;
-pub mod schema;
-pub mod models;
 
-use diesel::OptionalExtension;
-use diesel::QueryResult;
-use server::db_executer::DbExecuter;
-use rocket_contrib::Json;
 use common::race_run::NewRaceRun;
-use server::db_conn::Pool;
+use diesel::QueryResult;
 use diesel::pg::PgConnection;
 use r2d2_diesel::ConnectionManager;
+use rocket_contrib::Json;
+use server::db_conn::Pool;
+use server::db_executer::DbExecuter;
+use server::runstore::RunStore;
 
 static DATABASE_URL: &'static str = dotenv!("DATABASE_URL");
 
@@ -38,14 +37,15 @@ fn init_pool() -> Pool {
 }
 
 #[post("/runs", format = "application/json", data = "<run>")]
-fn create_run(exec: DbExecuter, run: Json<NewRaceRun>) -> QueryResult<Json<i32>> {
-
-    exec.create_racerun(&run).map(|id| Json(id))
+fn create_run(store: DbExecuter, run: Json<NewRaceRun>) -> QueryResult<Json<i32>> {
+    store.create_racerun(&run).map(|id| Json(id))
 }
 
 #[get("/run/<run_id>")]
-fn get_run(exec: DbExecuter, run_id: i32) -> QueryResult<Option<Json<NewRaceRun>>> {
-    exec.get_racerun(run_id).optional().map(|run_opt| run_opt.map(|run|Json(run)))
+fn get_run(store: DbExecuter, run_id: i32) -> QueryResult<Option<Json<NewRaceRun>>> {
+    store
+        .get_racerun(&run_id)
+        .map(|run_opt| run_opt.map(|run| Json(run)))
 }
 
 fn main() {

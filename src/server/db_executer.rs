@@ -1,15 +1,15 @@
-
-use server::db_conn::Pool;
-use server::db_conn::DbConn;
-use diesel::QueryResult;
 use common::race_run::{self, NewRaceRun};
-use models::*;
+use db::models::*;
+use db::schema::*;
+use diesel::QueryResult;
 use diesel::prelude::*;
-use rocket::request::{self, FromRequest};
-use rocket::{Request, State, Outcome};
-use schema::*;
+use diesel::result;
 use rocket::http::Status;
-
+use rocket::request::{self, FromRequest};
+use rocket::{Outcome, Request, State};
+use server::db_conn::DbConn;
+use server::db_conn::Pool;
+use server::runstore::RunStore;
 
 pub struct DbExecuter {
     conn: DbConn,
@@ -27,8 +27,13 @@ impl<'a, 'r> FromRequest<'a, 'r> for DbExecuter {
     }
 }
 
-impl DbExecuter {
-    pub fn create_racerun(&self, new_run: &NewRaceRun) -> QueryResult<i32> {
+impl RunStore for DbExecuter {
+    type Error = result::Error;
+    type Key = i32;
+    fn get_racerun(&self, id: &Self::Key) -> QueryResult<Option<NewRaceRun>> {
+        self.get_run_by_id(&id).optional()
+    }
+    fn create_racerun(&self, new_run: &NewRaceRun) -> QueryResult<Self::Key> {
         let run = create_run(&self.conn, new_run.duration_in_seconds as i32)?;
         let _ = new_run
             .zones
@@ -58,16 +63,16 @@ impl DbExecuter {
 
         Ok(run.id)
     }
+}
 
-    pub fn get_racerun(&self, run_id: i32) -> QueryResult<NewRaceRun> {
-        let run: Run = runs::table.find(&run_id).get_result(&*self.conn)?;
+impl DbExecuter {
+    fn get_run_by_id(&self, id: &i32) -> QueryResult<NewRaceRun> {
+        let run: Run = runs::table.find(id).get_result(&*self.conn)?;
         let db_zones: Vec<ZoneEntry> = ZoneEntry::belonging_to(&run).load(&*self.conn)?;
         let db_levels: Vec<LevelUp> = LevelUp::belonging_to(&run).load(&*self.conn)?;
         let zones = db_zones
             .into_iter()
-            .map(|zone| {
-                race_run::ZoneEntry::new(zone.name, zone.duration_in_seconds as u64)
-            })
+            .map(|zone| race_run::ZoneEntry::new(zone.name, zone.duration_in_seconds as u64))
             .collect();
 
         let levels = db_levels
