@@ -3,7 +3,7 @@ use std::str::FromStr;
 use chrono::prelude::*;
 use regex::Regex;
 
-const REGEX_STRING: &str = r"(?P<date>[\d/]{10} [\d:]{8}) \d{9} (?P<id>\w+) \[(?P<log_string>[^\[]+)\] :? ?(?P<message>.*)";
+const REGEX_STRING: &str = r"(?P<date>[\d/]{10} [\d:]{8}) \d+ (?P<id>\w+) \[(?P<log_string>[^\[]+)\] :? ?(?P<message>.*)";
 const TIME_PARSE_STRING: &str = "%Y/%m/%d %H:%M:%S";
 
 #[derive(Debug, PartialEq)]
