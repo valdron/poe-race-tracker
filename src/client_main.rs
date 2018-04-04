@@ -1,4 +1,3 @@
-
 extern crate chrono;
 extern crate env_logger;
 #[macro_use]
@@ -16,22 +15,22 @@ extern crate serde_json;
 mod client;
 mod common;
 
-
-use client::get_zone_entries;
-use client::fill_vec_and_return_end_time;
-use client::{wait_for_start_of_run, get_race_iter, get_level_ups};
-use common::race_run::ZoneEntry;
-use common::race_run::LevelUp;
 use client::client_error::ClientResult;
-use std::path::Path;
+use client::fill_vec_and_return_end_time;
+use client::get_zone_entries;
+use client::{get_level_ups, get_race_iter, wait_for_start_of_run};
+use common::race_run::LevelUp;
+use common::race_run::ZoneEntry;
 use log::LevelFilter;
 use std::fs::{File, OpenOptions};
 use std::io::{Seek, SeekFrom};
+use std::path::Path;
 
 use client::logline_generator::{DefaultLogLineGenerator, LogLineGenerator};
 use common::race_run::NewRaceRun;
 
-const CLIENT_TXT: &str = "C:\\Program Files (x86)\\Grinding Gear Games\\Path of Exile\\logs\\Client.txt";
+const CLIENT_TXT: &str =
+    "C:\\Program Files (x86)\\Grinding Gear Games\\Path of Exile\\logs\\Client.txt";
 
 fn main() {
     let mut builder = env_logger::Builder::from_default_env();

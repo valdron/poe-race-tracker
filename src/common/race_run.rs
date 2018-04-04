@@ -1,4 +1,4 @@
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, PartialEq)]
 pub struct ZoneEntry {
     pub name: String,
     pub seconds_after_start: u64,
@@ -13,7 +13,7 @@ impl ZoneEntry {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, PartialEq)]
 pub struct LevelUp {
     pub level: u8,
     pub seconds_after_start: u64,
@@ -27,7 +27,7 @@ impl LevelUp {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, PartialEq)]
 pub struct NewRaceRun {
     pub duration_in_seconds: u64,
     pub zones: Vec<ZoneEntry>,
@@ -42,4 +42,13 @@ impl NewRaceRun {
             zones,
         }
     }
+}
+
+#[test]
+fn test_deserialize() {
+    use serde_json::from_reader;
+    const BRUTUS_RUN_JSON: &[u8] = include_bytes!("../../test_runs/brutusrun.json");
+
+    let res: Result<NewRaceRun, _> = from_reader(BRUTUS_RUN_JSON);
+    assert!(res.is_ok());
 }
