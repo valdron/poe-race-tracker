@@ -72,7 +72,9 @@ impl DbExecuter {
         let db_levels: Vec<LevelUp> = LevelUp::belonging_to(&run).load(&*self.conn)?;
         let zones = db_zones
             .into_iter()
-            .map(|zone| race_run::ZoneEntry::new(zone.name, zone.duration_in_seconds as u64))
+            .map(|zone| {
+                race_run::ZoneEntry::new(zone.name, zone.duration_in_seconds as u64)
+            })
             .collect();
 
         let levels = db_levels

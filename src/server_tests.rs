@@ -8,9 +8,13 @@ fn get_rocket_instance() -> rocket::Rocket {
     dotenv::dotenv().ok();
     let db_url = std::env::var("DATABASE_URL").expect("DATABASE_URL was expected to be set");
 
-    let rocket = rocket::ignite()
-        .manage(init_pool(&db_url))
-        .mount("/", routes![create_run, get_run]);
+    let rocket = rocket::ignite().manage(init_pool(&db_url)).mount(
+        "/",
+        routes![
+            create_run,
+            get_run,
+        ],
+    );
 
     rocket
 }

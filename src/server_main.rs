@@ -41,9 +41,9 @@ pub fn create_run(store: DbExecuter, run: Json<NewRaceRun>) -> QueryResult<Json<
 
 #[get("/run/<run_id>")]
 fn get_run(store: DbExecuter, run_id: i32) -> QueryResult<Option<Json<NewRaceRun>>> {
-    store
-        .get_racerun(&run_id)
-        .map(|run_opt| run_opt.map(|run| Json(run)))
+    store.get_racerun(&run_id).map(|run_opt| {
+        run_opt.map(|run| Json(run))
+    })
 }
 
 fn main() {
